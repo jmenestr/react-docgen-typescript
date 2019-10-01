@@ -462,14 +462,19 @@ export class Parser {
     if (
       this.shouldExtractLiteralValuesFromEnum &&
       propType.isUnion() &&
-      propType.types.every(type => type.isStringLiteral())
+      propType.types.every(
+        type => type.symbol && typeof type.symbol.name === 'string'
+      )
     ) {
       return {
         name: 'enum',
         raw: propTypeString,
         value: propType.types
           .map(type => ({
-            value: type.isStringLiteral() ? `"${type.value}"` : undefined
+            value:
+              typeof type.symbol.name === 'string'
+                ? `"${type.symbol.name}"`
+                : undefined
           }))
           .filter(Boolean)
       };
